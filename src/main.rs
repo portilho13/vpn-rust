@@ -1,3 +1,9 @@
+mod args;
+
 fn main() {
-    println!("Hello, world!");
+    let args = args::get_args();
+    
+    let mode = args[0].to_string();
+    let ip = args[1].to_string();
+
 }
