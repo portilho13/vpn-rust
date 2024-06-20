@@ -2,7 +2,7 @@ use std::net::TcpStream;
 use std::io::Error;
 
 pub fn client(ip: String) {
-    let mut _client = match create_client(ip) {
+    let mut client = match create_client(ip) {
         Ok(client) => {
             println!("Successfully connected to IP: {}", client.peer_addr().unwrap());
             client
@@ -12,6 +12,10 @@ pub fn client(ip: String) {
             return;
         }
     };
+
+    loop {
+        println!("Client: {}", client.peer_addr().unwrap());
+    }
 }
 
 fn create_client(ip: String) -> Result<TcpStream, Error> {

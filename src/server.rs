@@ -2,7 +2,10 @@ use std::{io, net::TcpListener};
 
 pub fn server(ip: String) {
     let listener = match create_listener(ip) {
-        Ok(t) => t,
+        Ok(t) => {
+            println!("Started to listen on ip {}", t.local_addr().unwrap());
+            t
+        },
         Err(err) => {
             println!("Error: {}", err); 
             return
