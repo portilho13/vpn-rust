@@ -1,6 +1,7 @@
 mod args;
 mod server;
 mod client;
+mod tun;
 
 fn main() {
     let args = args::get_args();
