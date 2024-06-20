@@ -13,7 +13,7 @@ pub fn server(ip: String) {
         match stream {
             Ok(stream) => {
                 println!("Client with IP: {} connected sucessfully", stream.peer_addr().unwrap());
-            }
+            },
             Err (err) => {
                 println!("Connection failed: {}", err)
             }

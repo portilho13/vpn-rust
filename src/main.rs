@@ -1,5 +1,6 @@
 mod args;
 mod server;
+mod client;
 
 fn main() {
     let args = args::get_args();
@@ -9,6 +10,8 @@ fn main() {
 
     if mode == "server" {
         server::server(ip)
+    } else if mode == "client" {
+        client::client(ip)
     }
 
 }
