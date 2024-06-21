@@ -12,7 +12,7 @@ fn main() {
     if mode == "server" {
         server::server(ip)
     } else if mode == "client" {
-        client::client(ip)
+        client::client(ip);
     }
 
 }
