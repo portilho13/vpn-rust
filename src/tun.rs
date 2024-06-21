@@ -16,7 +16,7 @@ pub fn create_tun_iface() -> Result<tun::platform::Device, tun::Error> {
     tun::create(&config)
 }
 
-pub fn setup_tun_iface(ip: &str) -> Result<(), Box<dyn Error>> {
+pub fn setup_tun_iface() -> Result<(), Box<dyn Error>> {
     let output = Command::new("sudo")
         .arg("ip")
         .arg("link")
@@ -30,24 +30,65 @@ pub fn setup_tun_iface(ip: &str) -> Result<(), Box<dyn Error>> {
         return Err(format!("Failed to set up {}: {:?}", TUN_INTERFACE, output.stderr).into());
     }
 
-    let ip: Vec<&str> = ip.split(':').collect();
-    let ip = ip[0];
-    let subnet = format!("{}/24", ip);
-
     let output = Command::new("sudo")
         .arg("ip")
         .arg("addr")
         .arg("add")
-        .arg(subnet)
+        .arg("10.0.0.5/24")
         .arg("dev")
         .arg(TUN_INTERFACE)
         .output()?;
 
     if !output.status.success() {
-        return Err(format!("Failed to assign IP {} to {}: {:?}", ip, TUN_INTERFACE, output.stderr).into());
+        return Err(format!("Failed to assign IP to {}: {:?}", TUN_INTERFACE, output.stderr).into());
     }
 
     Ok(())
+}
+
+pub fn setup_client_tun_iface() {
+    let ip_output = Command::new("ip")
+        .arg("addr")
+        .arg("add")
+        .arg("10.0.0.2/24")
+        .arg("dev")
+        .arg("tun0")
+        .output()
+        .expect("Failed to execute IP command");
+
+    if !ip_output.status.success() {
+        eprintln!("Failed to set IP: {}", String::from_utf8_lossy(&ip_output.stderr));
+        return;
+    }
+
+    let link_output = Command::new("ip")
+        .arg("link")
+        .arg("set")
+        .arg("up")
+        .arg("dev")
+        .arg("tun0")
+        .output()
+        .expect("Failed to execute IP LINK command");
+
+    if !link_output.status.success() {
+        eprintln!("Failed to set link up: {}", String::from_utf8_lossy(&link_output.stderr));
+        return;
+    }
+
+    let route_output = Command::new("ip")
+        .arg("route")
+        .arg("add")
+        .arg("0.0.0.0/0")
+        .arg("via")
+        .arg("10.8.0.1")
+        .arg("dev")
+        .arg("tun0")
+        .output()
+        .expect("Failed to execute IP ROUTE command");
+
+    if !route_output.status.success() {
+        eprintln!("Failed to set route: {}", String::from_utf8_lossy(&route_output.stderr));
+    }
 }
 
 pub fn read_from_tun_and_send_to_client<T: tun::Device>(tun: &mut T, mut client: TcpStream) {

@@ -27,7 +27,7 @@ pub fn server(ip: String) {
         }
     };
 
-    if let Err(e) = tun::setup_tun_iface(ip.as_str()) {
+    if let Err(e) = tun::setup_tun_iface() {
         println!("Failed to setup TUN interface: {}", e);
         return;
     }

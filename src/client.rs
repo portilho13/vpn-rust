@@ -26,12 +26,7 @@ pub fn client(ip: String) {
         }
     };
 
-    let client_ip : String = format!("{}", client.local_addr().unwrap()); 
-
-    if let Err(e) = tun::setup_tun_iface(&client_ip.as_str()) {
-        println!("Failed to setup TUN interface: {}", e);
-        return;
-    }
+    tun::setup_client_tun_iface();
     println!("Successfully assigned IP to interface");
 
     let mut buffer = [0u8; 1500];
