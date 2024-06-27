@@ -1,4 +1,4 @@
-use std::{error::Error, io::Write, process::Command};
+use std::{error::Error, io::{Read, Write}, process::Command};
 use serde_derive::{Serialize, Deserialize};
 use std::net::TcpStream;
 
@@ -95,6 +95,17 @@ pub fn read_from_tun_and_send_to_client<T: tun::Device>(tun: &mut T, mut client:
     let mut buffer = [0u8; 1500];
 
     loop {
+        match client.read(&mut buffer) {
+            Ok(0) => {
+                println!("Client Disconnected");
+                return;
+            },
+            Ok(_) => {},
+            Err(e) => {
+                println!("Error {}", e);
+                return
+            }
+        }
         match tun.read(&mut buffer) {
             Ok(n) => {
                 println!("Read {} bytes from iface", n);

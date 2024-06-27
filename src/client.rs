@@ -56,6 +56,7 @@ pub fn client(ip: String) {
                 println!("Read {} bytes from server", n);
                 let packet: tun::Packet = bincode::deserialize(&buffer[..n]).unwrap();
                 println!("Tun data from server: {:?}", packet.data);
+                tun_iface.write(&packet.data).unwrap();
 
             }
             Err(e) => {
